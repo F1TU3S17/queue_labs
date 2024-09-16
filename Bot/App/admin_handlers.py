@@ -1,9 +1,9 @@
-from Bot.BotData.config import bot_token, admin_id
-from Bot.BotData.database_function import *
-from Bot.App.states import *
+from BotData.config import bot_token, admin_id
+from BotData.database_function import *
+from App.states import *
 from .function import *
-import Bot.App.user_keyboard as kb
-import Bot.App.admin_keyboard as ad_kb
+import App.user_keyboard as kb
+import App.admin_keyboard as ad_kb
 from aiogram import Router, Bot, F
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 from aiogram.fsm.context import FSMContext

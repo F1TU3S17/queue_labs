@@ -4,7 +4,7 @@ from datetime import datetime, date
 import pytz
 import random
 import re
-import Bot.App.globals as g
+import App.globals as g
 
 def check_time_format(time_str):
     time_pattern = r'^[0-2]\d:[0-5]\d$'

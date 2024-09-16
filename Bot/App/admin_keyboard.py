@@ -1,6 +1,6 @@
 from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
                             InlineKeyboardButton,InlineKeyboardMarkup, ReplyKeyboardRemove)
-from Bot.BotData.database_function import *
+from BotData.database_function import *
 
 admin_main_kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Добавить предмет"),
                                                KeyboardButton(text="Настроить предметы"),

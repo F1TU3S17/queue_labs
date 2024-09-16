@@ -3,9 +3,9 @@ from aiogram import Bot, Dispatcher
 from aiogram.methods import DeleteWebhook
 from App.user_handlers import router
 from App.admin_handlers import router_admin
-from Bot.BotData.config import bot_token
+from BotData.config import bot_token
 
-import Bot.BotData.database_function as db
+import BotData.database_function as db
 async def on_startup():
     await db.db_start()
 

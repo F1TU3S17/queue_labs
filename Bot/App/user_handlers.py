@@ -1,8 +1,8 @@
-from Bot.BotData.config import bot_token
-from Bot.BotData.database_function import *
-from Bot.App.states import *
-import Bot.App.user_keyboard as kb
-import Bot.App.globals as g
+from BotData.config import bot_token
+from BotData.database_function import *
+from App.states import *
+import App.user_keyboard as kb
+import App.globals as g
 
 from aiogram import Router, Bot, F
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery

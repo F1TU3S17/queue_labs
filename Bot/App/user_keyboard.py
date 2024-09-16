@@ -1,6 +1,6 @@
 from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
                             InlineKeyboardButton,InlineKeyboardMarkup)
-from Bot.BotData.database_function import *
+from BotData.database_function import *
 
 
 main_menu = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Записаться на лабу")]],

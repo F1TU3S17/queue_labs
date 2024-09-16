@@ -1,5 +1,5 @@
 import sqlite3 as sq
-from Bot.App.function import *
+from App.function import *
 db = sq.connect('BotData/database.db')
 cur = db.cursor()
 
