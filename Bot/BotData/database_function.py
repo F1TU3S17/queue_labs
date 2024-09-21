@@ -155,6 +155,36 @@ async def users_list():
     return user_list
 
 
+
+async def send_messages(bot, users, lab_day):
+    for user in users:
+        try:
+            print("Рассылка записи!")
+            async with ChatActionSender.typing(bot=bot, chat_id=get_chat_id(user)[0]):
+                await bot.send_message(user, text=f"Запись на лабу по {lab_day[0]} открыта!!!")
+        except exceptions.TelegramForbiddenError:
+            print(user, 'Забанил бота(((')
+        except Exception as e:  # Обрабатываем все другие возможные ошибки
+            print(f'Ошибка для пользователя {user}: {e}')
+
+async def distribute_and_send(bot, users):
+    final_queue = distribute_queue(list(g.set_order_id))
+    order = ""
+    for i, (id, priority) in enumerate(final_queue, 1):
+        user_info = user_by_tg_id(id)
+        if len(user_info):
+            order += f"{i}){user_info[0]} {user_info[1]}\n"
+    if not (len(order)):
+        order = "Очередь не была сформирована"
+    print(order)
+    for user in users:
+        try:
+            async with ChatActionSender.typing(bot=bot, chat_id=get_chat_id(user)[0]):
+                await bot.send_message(user, order)
+        except exceptions.TelegramForbiddenError:
+            print(user, 'Забанил бота(((')
+        except Exception as e:
+            print(f'Ошибка для пользователя {user}: {e}')
 async def check_time(bot):
     """
     Назначение:
@@ -177,22 +207,9 @@ async def check_time(bot):
             if true_time:
                 set_flag(True)
                 users = await users_list()
-                for user in users:
-                    await bot.send_message(user, text=f"Запись на лабу по {lab_day[0]} открыта!!!")
+                await send_messages(bot, users, lab_day)
                 await asyncio.sleep(300)
-                final_queue = distribute_queue(list(g.set_order_id))
-                order = ""
-                for i, (id, priority) in enumerate(final_queue, 1):
-                    user_info = user_by_tg_id(id)
-                    order +=f"{i}){user_info[0]} {user_info[1]}\n"
-                if not(len(order)):
-                    order = "Очередь не была сформирована"
-                for user in users:
-                    try:
-                        async with ChatActionSender.typing(bot=bot, chat_id=get_chat_id(user)[0]):
-                            await bot.send_message(user, order)
-                    except exceptions.TelegramAPIError:
-                        print(user, 'Забанил бота(((')
+                await distribute_and_send(bot, users)
                 set_flag(False)
                 g.set_order_id.clear()
         await asyncio.sleep(60)
