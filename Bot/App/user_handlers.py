@@ -54,17 +54,20 @@ async def lab(message: Message, state: FSMContext):
     user_id = message.from_user.id
     list_lab = get_lab_day()
     is_can_record = g.flag
-    if len(list_lab) and not(is_can_record):
-        await message.answer(f'Сегодня будет лаба по: {list_lab[0]}\nПервая лаба в {list_lab[1]}, вторая в {list_lab[2]}\n'
-                             f'Запись будет доступна за 5 минут до начала')
-    elif len(list_lab) and is_can_record and not(check_user_in_set(user_id)):
-        await state.set_state(Record.priority)
-        await message.answer('Укажите ваш приоритет: 0 - все равно, когда сдаваться, но было бы неплохо ближе к концу,  '
-                             '1 - хочу сдать чуть пораньше, но не срочно, 2 - ОЧЕНЬ НАДО ГОРИТ!')
-    elif len(list_lab) and is_can_record and (check_user_in_set(user_id)):
-        await message.answer('Вы уже находитесь в очереди!\nОжидайте результатов')
+    if len(user_by_tg_id(user_id)):
+        if len(list_lab) and not(is_can_record):
+            await message.answer(f'Сегодня будет лаба по: {list_lab[0]}\nПервая лаба в {list_lab[1]}, вторая в {list_lab[2]}\n'
+                                 f'Запись будет доступна за 5 минут до начала')
+        elif len(list_lab) and is_can_record and not(check_user_in_set(user_id)):
+            await state.set_state(Record.priority)
+            await message.answer('Укажите ваш приоритет: 0 - все равно, когда сдаваться, но было бы неплохо ближе к концу,  '
+                                 '1 - хочу сдать чуть пораньше, но не срочно, 2 - ОЧЕНЬ НАДО ГОРИТ!')
+        elif len(list_lab) and is_can_record and (check_user_in_set(user_id)):
+            await message.answer('Вы уже находитесь в очереди!\nОжидайте результатов')
+        else:
+            await message.answer("Сегодня нет лаб!!!")
     else:
-        await message.answer("Сегодня нет лаб!!!")
+        await message.answer("Сперва прошу зарегаться!!!")
 
 @router.message(Record.priority)
 async def lab(message: Message, state: FSMContext):
