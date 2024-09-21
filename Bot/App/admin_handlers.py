@@ -1,6 +1,8 @@
 from BotData.config import bot_token, admin_id
 from BotData.database_function import *
 from App.states import *
+from aiogram.utils.chat_action import ChatActionSender
+
 from .function import *
 import App.user_keyboard as kb
 import App.admin_keyboard as ad_kb
@@ -8,7 +10,8 @@ from aiogram import Router, Bot, F
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import CommandStart, Command
-
+from aiogram.utils import chat_action
+from aiogram import exceptions
 
 bot = Bot(token=bot_token)
 router_admin = Router()
@@ -212,9 +215,15 @@ async def go_mailing(message: Message, state: FSMContext):
         await message.answer('***Выполняем рассылку***⏳', parse_mode='Markdown')
         counter = 0
         for i in users:
-            await bot.send_message(i, data_message)
-            counter += 1
-        await message.answer(f'***Сообщение доставлено всем*** ___"{counter}"___ ***пользователям***📧', parse_mode='Markdown', reply_markup=ad_kb.admin)
+            try:
+                chat_id = get_chat_id(i)[0]
+
+                async with ChatActionSender.typing(bot=bot, chat_id=chat_id):
+                    await bot.send_message(i, data_message)
+                counter += 1
+                await message.answer(f'***Сообщение доставлено всем*** ___"{counter}"___ ***пользователям***📧', parse_mode='Markdown', reply_markup=ad_kb.admin)
+            except exceptions.TelegramAPIError:
+                print(i, 'Забанил бота(((')
     else:
         await message.answer('Как вам угодно😊', reply_markup=ad_kb.admin_main_kb)
     await state.clear()

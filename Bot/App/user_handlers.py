@@ -4,11 +4,11 @@ from App.states import *
 import App.user_keyboard as kb
 import App.globals as g
 
-from aiogram import Router, Bot, F
+from aiogram import Router, Bot, F, types
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import CommandStart
-
+from aiogram import exceptions
 
 bot = Bot(token=bot_token)
 router = Router()
@@ -44,7 +44,8 @@ async def set_surname(message: Message, state: FSMContext):
     user = message.from_user
     user_id = user.id
     user_username = user.username
-    await user_to_db(user_id,user_username, name, surname)
+    chat_id = message.chat.id
+    await user_to_db(user_id,user_username, name, surname, chat_id)
     await message.answer('Ваши данные добавлены!',reply_markup=kb.main_menu)
     await state.clear()
 
@@ -78,7 +79,6 @@ async def lab(message: Message, state: FSMContext):
         await state.clear()
     except ValueError:
         await message.answer("Введите число!!!")
-
 
 
 
