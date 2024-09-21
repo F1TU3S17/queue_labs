@@ -1,5 +1,8 @@
 import sqlite3 as sq
 from App.function import *
+from aiogram.utils.chat_action import ChatActionSender
+from aiogram import exceptions
+
 db = sq.connect('BotData/database.db')
 cur = db.cursor()
 
@@ -9,7 +12,8 @@ async def db_start():
                 tg_id INTEGER PRIMARY KEY,
                 username TEXT,
                 name TEXT,
-                surname TEXT)
+                surname TEXT,
+                chat_id INTEGER)
                 ''')
     cur.execute(f'''CREATE TABLE IF NOT EXISTS subjects (
                         subject TEXT,
@@ -32,13 +36,19 @@ async def db_start():
 
 
 
-async def user_to_db(tg_id, username, name, surname):
+async def user_to_db(tg_id, username, name, surname, chat_id):
     cur.execute('SELECT COUNT(*) FROM users WHERE tg_id = ?', (tg_id,))
     exists = cur.fetchone()[0]
     if not exists:
-        cur.execute('INSERT INTO users(tg_id, username, name, surname) VALUES (?,?,?,?)',(tg_id,username,name,surname))
+        cur.execute('INSERT INTO users(tg_id, username, name, surname, chat_id) VALUES (?,?,?,?,?)',(tg_id,username,name,surname,chat_id))
         db.commit()
 
+
+def get_chat_id(tg_id):
+    chat_id = cur.execute('SELECT chat_id FROM users WHERE tg_id == ?',(tg_id,)).fetchone()
+    if chat_id:
+        return list(chat_id)
+    return []
 
 def chek_user(tg_id):
     exists = False
@@ -178,7 +188,11 @@ async def check_time(bot):
                 if not(len(order)):
                     order = "Очередь не была сформирована"
                 for user in users:
-                    await bot.send_message(user, order)
+                    try:
+                        async with ChatActionSender.typing(bot=bot, chat_id=get_chat_id(user)[0]):
+                            await bot.send_message(user, order)
+                    except exceptions.TelegramAPIError:
+                        print(user, 'Забанил бота(((')
                 set_flag(False)
                 g.set_order_id.clear()
         await asyncio.sleep(60)
