@@ -173,7 +173,7 @@ async def distribute_and_send(bot, users):
     for i, (id, priority) in enumerate(final_queue, 1):
         user_info = user_by_tg_id(id)
         if len(user_info):
-            order += f"{i}){user_info[0]} {user_info[1]}\n"
+            order += f"{i}){user_info[0]} {user_info[1]}, приоритет: {priority}\n"
     if not (len(order)):
         order = "Очередь не была сформирована"
     print(order)
