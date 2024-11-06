@@ -8,6 +8,9 @@ from BotData.interaction_to_api import fetch_schedule
 
 
 
+
+
+
 # Функция для проверки, наступило ли время записи на лабу
 def check_lab_time(list_day_lessons, current_time): 
     for lesson in list_day_lessons:
@@ -55,6 +58,7 @@ async def distribute_and_send(bot, users):
         except Exception as e:
             print(f'Ошибка для пользователя {user}: {e}')
 
+
 async def check_time(bot):
     """
     Назначение:
@@ -67,12 +71,14 @@ async def check_time(bot):
         day = get_current_day_of_week()
         if day != g.current_day:
             g.current_day = day
+            clear_calendar_labs()
             fetch_schedule('КТбо2-8')
 
         #print(g.current_day)
         #print(g.calendar_labs)
         if (day != 'Неизвестный день'):
             list_day_lessons = g.calendar_labs[day]
+            #print(day, list_day_lessons)
             #print(list_day_lessons)
 
             true_time = False
