@@ -106,3 +106,14 @@ def distribute_queue(people):
 
 def time_to_seconds(hour, minute):
     return hour * 3600 + minute * 60
+
+
+def clear_calendar_labs():
+    g.calendar_labs = {
+        'Понедельник': [],
+        'Вторник': [],
+        'Среда': [],
+        'Четверг': [],
+        'Пятница': [],
+        'Суббота': []
+    }
