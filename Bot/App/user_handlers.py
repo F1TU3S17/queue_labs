@@ -1,6 +1,7 @@
 from BotData.config import bot_token
 from BotData.database_function import *
 from App.states import *
+
 import App.user_keyboard as kb
 import App.globals as g
 
@@ -52,12 +53,16 @@ async def set_surname(message: Message, state: FSMContext):
 @router.message(F.text == "Записаться на лабу")
 async def lab(message: Message, state: FSMContext):
     user_id = message.from_user.id
-    list_lab = get_lab_day()
+    day = g.current_day
+    list_lab= g.calendar_labs[day]
     is_can_record = g.flag
     if len(user_by_tg_id(user_id)):
         if len(list_lab) and not(is_can_record):
-            await message.answer(f'Сегодня будет лаба по: {list_lab[0]}\nПервая лаба в {list_lab[1]}, вторая в {list_lab[2]}\n'
-                                 f'Запись будет доступна за 5 минут до начала')
+            output_str = ''
+            for i in range(len(list_lab)):
+                output_str += str(list_lab[i][0][0] + ' - ' + list_lab[i][0][1]) + ' ' + str(list_lab[i][1]) + '\n'
+            output_str += '\nЗапись будет доступна за 5 минут до начала'
+            await message.answer(output_str)
         elif len(list_lab) and is_can_record and not(check_user_in_set(user_id)):
             await state.set_state(Record.priority)
             await message.answer('Укажите ваш приоритет: 0 - все равно, когда сдаваться, но было бы неплохо ближе к концу,  '
@@ -67,13 +72,19 @@ async def lab(message: Message, state: FSMContext):
         else:
             await message.answer("Сегодня нет лаб!!!")
     else:
-        await message.answer("Сперва прошу зарегаться!!!")
+        await message.answer("Ваших данных нет в базе, поэтому зарегистрируйтесь")
+        await message.answer("Введите ваше имя:")
+        await state.set_state(Reg.name)
+        
 
 @router.message(Record.priority)
 async def lab(message: Message, state: FSMContext):
     try:
         user_id = message.from_user.id
         user_priority = int(message.text)
+        choose_variant_list = [0, 1, 2]
+        if (user_priority not in choose_variant_list):
+            raise ValueError()
         if not(check_user_in_set(user_id)):
             set_user_to_order(user_id, user_priority)
             await message.answer('Вы находитесь в очереди!')
@@ -81,7 +92,7 @@ async def lab(message: Message, state: FSMContext):
             await message.answer('Вы уже в очереди!')
         await state.clear()
     except ValueError:
-        await message.answer("Введите число!!!")
+        await message.answer("Введите ваш приоритет в нормальном формате!!!")
 
 
 

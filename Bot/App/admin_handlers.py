@@ -17,6 +17,8 @@ from aiogram.exceptions import TelegramAPIError
 bot = Bot(token=bot_token)
 router_admin = Router()
 
+
+#Рудимент!!! Она по-факту не нужна!!!
 @router_admin.message(Command('admin'))
 async def admin(message:Message, state: FSMContext):
     await state.clear()

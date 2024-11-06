@@ -16,6 +16,12 @@ def is_english(text):
     return all(char in english_chars for char in text)
 
 
+
+# Функция для получения текущего времени
+def get_current_time():
+    now = datetime.now(pytz.timezone('Europe/Moscow'))
+    return now.strftime('%H:%M')
+
 def get_current_day_of_week():
     moscow_tz = pytz.timezone('Europe/Moscow')
     moscow_time = datetime.now(moscow_tz)
